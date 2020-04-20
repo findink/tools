@@ -1,85 +1,59 @@
-#Developed By
-#NISHAN POOJARY
-
-
+import sys
+import math
 from collections import Counter
-import numpy as np
 
-print("Enter a Sequence\n")
-inputstr = input()
-print  (inputstr + "\n")
+class arithmeticCoding():
+    char_ratio_dict = {}
+    site_dict = {}
+    origin_str = ''
+    encode_str = ''
+    decode_str = ''
+    
+    def __init__(self):
+        pass
+    def encode(self,s):
+        self.origin_str = s
+        self.getSiteDict()
+        low,high = 0,1
+        for c in self.origin_str:
+            low_ = low +  (high-low)*self.site_dict[c][0]
+            high_ = low + (high-low)*self.site_dict[c][1]
+            low,high = low_,high_
+        self.encode_str =  str((low+high)/2)
+        return self.encode_str
 
-res = Counter(inputstr)
-print (str(res))
+    def printDict(self):
+        for k,v in self.site_dict.items():
+            print(k,v)
 
-#sortlist = sorted(res.iteritems(), lambda x, y : cmp(x[1], y[1]), reverse = True)
-#print sortlist
-M = len(res)
-#print (M)
-N = 5
-A = np.zeros((M,5),dtype=object)
+    def getSiteDict(self):
+        char_dict = Counter(self.origin_str)
+        origin_str_len = len(self.origin_str)
+        low = 0
+        for (k,v) in char_dict.items():
+            ratio = v/origin_str_len
+            self.site_dict.update({k:[low,low + ratio]})
+            low += ratio
+    
+    def decode(self,s):
+        num = s
+        low,high = 0,1
+        while len(self.decode_str)< len(self.origin_str):
+            num_ = float(str(num)[0:-1])
+            for k,v in self.site_dict.items():
+                low_ = low +  (high-low)*v[0]
+                high_ = low + (high-low)*v[1]
+                if low_ <= num_ <= high_:
+                    self.decode_str += k
+                    low,high = low_,high_
+                    break
+        return self.decode_str          
 
-#A = [[0 for i in range(N)] for j in range(M)]
-
-reskeys = list(res.keys())
-resvalue = list(res.values())
-totalsum = sum(resvalue) # totalsum = len(inputstr)
-
-# Creating Table
-
-A[M-1][3] = 0
-for i in range(M):
-   A[i][0] = reskeys[i]
-   A[i][1] = resvalue[i]
-   A[i][2] = ((resvalue[i]*1.0)/totalsum)
-i=0
-A[M-1][4] = A[M-1][2]
-while i < M-1:
-   A[M-i-2][4] = A[M-i-1][4] + A[M-i-2][2]
-   A[M-i-2][3] = A[M-i-1][4]
-   i+=1
-print (A)
-
-# Encoding
-
-print("\n------- ENCODING -------\n" )
-strlist = list(inputstr)
-LEnco = []
-UEnco = []
-LEnco.append(0)
-UEnco.append(1)
-
-for i in range(len(strlist)):
-    result = np.where(A == reskeys[reskeys.index(strlist[i])])
-    addtollist = (LEnco[i] + (UEnco[i] - LEnco[i])*float(A[result[0],3]))
-    addtoulist = (LEnco[i] + (UEnco[i] - LEnco[i])*float(A[result[0],4]))
-
-    LEnco.append(addtollist)
-    UEnco.append(addtoulist)
-
-    tag = (LEnco[-1] + UEnco[-1])/2.0  # 最终返回中间值
-
-LEnco.insert(0, " Lower Range")
-UEnco.insert(0, "Upper Range")
-print(np.transpose(np.array(([LEnco],[UEnco]),dtype=object)))
-print("\nThe Tag is \n ")
-print(tag)
-
-# Decoding
-
-print("\n------- DECODING -------\n" )
-ltag = 0
-utag = 1
-decodedSeq = []
-for i in range(len(inputstr)):
-    numDeco = ((tag - ltag)*1.0)/(utag - ltag)
-    for i in range(M):
-        if (float(A[i,3]) < numDeco < float(A[i,4])):
-
-            decodedSeq.append(str(A[i,0]))
-            ltag = float(A[i,3])
-            utag = float(A[i,4])
-            tag = numDeco
-
-print("The decoded Sequence is \n ")
-print("".join(decodedSeq))
+if __name__ == "__main__":
+    coding = arithmeticCoding()  
+    s = input('input a String:')  
+    num = coding.encode(s)
+    coding.printDict()
+    print('Encode Number:',num)
+    re = coding.decode(num)
+    print('Decode Number:',re)
