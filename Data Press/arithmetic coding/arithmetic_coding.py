@@ -52,7 +52,7 @@ class arithmeticCoding():
             if  v[0] < site <v[1]:
                 return k
 
-    #  TODO: 转化整数, 注意末尾的0会被去掉.
+   
     def leftandCut(self,n):
         if len(str(n)) < 16:
             flag = False

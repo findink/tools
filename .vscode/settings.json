@@ -1,3 +1,4 @@
 {
-    "sync.gist": "ed9ca3cef749390dca014f19b69fd62e9e7f742e"
+    "sync.gist": "ed9ca3cef749390dca014f19b69fd62e9e7f742e",
+    "cwd": "${fileDirname}"
 }
